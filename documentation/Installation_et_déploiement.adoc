@@ -1,0 +1,96 @@
+= Installation et déploiement
+:toc:
+:toc-title: Sommaire
+:toclevels: 2
+
+== I. Contexte et concept
+L'administration de l'IUT de Blagnac souhaite disposer d'un outil lui permettant de gérer ses vacataires, les cours sur lesquels ils interviennent, mais aussi les profils de vacataires recherchés. La solution technique développée (GVIUTB) permet à des responsables de vacataires d'ajouter/modifier, visualiser, et supprimer (archiver) des vacataires, des cours, des professeurs référents et des profils de vacataires recherchés, tout en assurant la sécurité des données manipulées.
+
+Ce document détaille l'ensemble des prérequis, installations et configurations nécessaires au déploiement de tous les composants nécessaires au bon fonctionnement de l'application.
+
+{empty} +
+
+== II. Configuration système
+Afin de rendre l'application fonctionnelle est capable de communiquer avec les autres composants, certaines configurations côté serveur sont nécessaires.
+
+=== 1. Apache et HTTPS
+L'application et l'API REST doivent être déployées préférablement sur des serveurs disposant d'https://httpd.apache.org/[Apache] et de PHP (version 8.x). Pour sécuriser la transition de données, le domaine utilisée devra également être certifié HTTPS.
+
+=== 2. Configuration des routes
+Dans le fichier `/etc/apache2/sites-available/nom-serveur.conf` (nom du domaine souhaité, sur un serveur Linux), coller le code ci-dessous en remplaçant les données, il permet de configurer les routes pour l'API REST et pour le répertoire `/assets` dans lequel seront stockées les images des utilisateurs :
+
+[source, apacheconfig]
+----
+RewriteEngine on
+# Route requests to /api to api.php
+RewriteRule ^/api/(.*)$ /var/www/html/chemin_api/index.php/$1 [L,QSA]
+# Route requests to the Angular app
+RewriteRule ^/assets/(.*)$ /var/www/html/chemin/assets/$1 [L,QSA]
+----
+
+{empty +}
+
+== III. Déploiement de la base de données
+Les données sont stockées dans une base de données sécurisée en ligne.
+
+=== 1. MariaDB et PHPMyAdmin
+Installer et configurer https://mariadb.org/[MariaDB] (MySQL) sur le serveur souhaité avec des identifiants de connexion. Il est possible et recommandé d'interagir avec la base de données en utilisant l'interface web https://www.phpmyadmin.net/[PHPMyAdmin] à installer et configurer également sur le serveur. Une fois connecté à la base de données avec une interface.
+
+=== 2. Script de création des tables
+Avec PHPMyAdmin, se rendre dans le champ d'insertion de requêtes SQL et y coller le contenu du link:../database/creation_tables.sql[script de création des tables de la base de données] fourni. Exécuter le script, si une erreur survient avec les premières lignes `DROP TABLE`, supprimer ces dernières puis réessayer. La base de données devrait être initialisée avec les tables et les contraintes nécessaires.
+
+{empty} +
+
+== IV. Déploiement de l'API REST
+Le code de l'API REST se trouve dans le répertoire link:../api[`/api`]. Ce dernier doit être déployé sur un serveur disposant d'Apache. Dans le fichier link:../api/config.php[`config.php`] mettre à jour les données des lignes suivantes avec les données de connexion à votre base de données :
+
+[source, php]
+----
+// Database configuration
+$db_host = "adresse du serveur hôte";
+$db_name = "nom de la base de données";
+$db_user = "nom de l'utilisateur MariaDB";
+$db_password = "mot de passe MariaDB";
+----
+
+Le fichier link:../api/.htaccess[`.htaccess`] fourni configure les redirections vers les routes de l'API.
+
+== V. Déploiement de l'application Angular
+=== 1. Prérequis
+L'application nécessite l'installation de certaines dépendances afin d'être reprise et déployée. Installer les dernières versions stables de https://nodejs.org/fr[NodeJS] et https://angular.io/[Angular]. Cloner en suite le dépôt GitHub du projet et une fois dedans, installer les dépendances JavaScript nécessaires avec la commande suivante :
+
+[source, bash]
+----
+npm install
+----
+
+=== 2. Version de développement
+L'application peut être reprise et améliorée sans avoir à être déployée sur le serveur en ligne. Il est possible d'ouvrir un serveur local afin de reprendre le code source Angular et de voir/tester les modifications en direct avec la commande suivante :
+
+[source, bash]
+----
+ng serve
+----
+
+Pour établir la connexion entre le serveur et l'application, il est nécessaire de remplacer le contenu de l'attribut `apiURL` par l'URL de l'API REST déployée dans le fichier link:../src/environments/environment.development.ts[`environment.development.ts`].
+
+=== 3. Version de production
+Pour déployer une version de production sur le serveur, remplacer le contenu de l'attribut `apiURL` par l'URL de l'API REST déployée dans le fichier link:../src/environments/environment.ts[`environment.ts`].
+
+"Construire" en suite l'application avec la commande ci-dessous, remplacer le lien par l'URL du serveur hôte hébergeant le site (le `/` à la fin est important) :
+
+[source, bash]
+----
+ng build --base-href "https://lien.sitehote.com/chemin/"
+----
+
+Récupérer en suite le contenu du répertoire `/dist/gviutb` créé et le déployer sur le serveur souhaité. La commande ci-dessous peut être utile, remplacer `user` par le nom de l'utilisateur, `hote` par l'adresse de l'hôte et `chemin` par le chemin du répertoire dans lequel déployer l'application web :
+
+[source, bash]
+----
+scp -r * user@hote:/var/www/chemin
+----
+
+La gestion des routes de l'application Angular se fera grâce au fichier link:../src/.htaccess[`.htaccess`] déjà fourni.
+
+Le répertoire link:../assets[`/assets`] doit également être déployé au même niveau que celui contenant le code source de l'API REST sur le serveur. Il permet de stocker les images et les CV des vacataires et des professeurs référents.

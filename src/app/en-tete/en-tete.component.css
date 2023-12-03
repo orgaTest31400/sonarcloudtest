@@ -1,0 +1,6 @@
+@media (width <= 992px) {
+  .connexion-data {
+    align-items: flex-start !important;
+    margin-top: 0.9rem;
+  }
+}

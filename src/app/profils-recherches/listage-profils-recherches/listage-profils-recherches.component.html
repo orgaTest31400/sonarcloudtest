@@ -1,0 +1,25 @@
+<h1 class="mb-3">{{ profilsRecherche.length }} profil(s) recherché(s)</h1>
+
+<div class="d-flex flex-wrap align-items-stretch gap-3 mb-4" >
+  <div class="d-flex align-items-center gap-2">
+    <label for="competences">Compétence</label>
+    <select class="select-classes form-select-lg form-select" name="competences" id="competences" [(ngModel)]="selectedCompetence" (change)="filtrerProfilsRecherches()">
+      <option value="" selected>Toutes les compétences</option>
+      <option [value]="competence.libelle" *ngFor="let competence of competences">{{ competence.libelle }}</option>
+    </select>
+  </div>
+  <button type="button" class="btn btn-success" [routerLink]="['/profils-recherches/ajouter']" routerLinkActive="router-link-active" >Ajouter un profil recherché</button>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4">
+  <div *ngFor="let profilRecherche of profilsRechercheFiltres" class="col mb-3 ps-2 pe-2">
+    <app-composant-profil-recherche [profilRecherche]="profilRecherche"></app-composant-profil-recherche>
+  </div>
+  <p *ngIf="profilsRechercheFiltres.length === 0" class="alert alert-warning">Aucun profil recherché à afficher</p>
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

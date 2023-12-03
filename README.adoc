@@ -1,0 +1,88 @@
+= Projet de gestion des vacataires (Groupe 2)
+:toc:
+:toc-title: Sommaire
+
+== I. Contexte
+L'administration de l'IUT de Blagnac souhaite disposer d'un outil lui permettant de gérer les vacataires intervenants dans l'établissement. Ledit outil doit principalement permettre aux responsables de vacataires d'ajouter, visualiser, modifier et supprimer des vacataires ayant été recrutés à l'IUT et sur quels cours ils interviennent, mais aussi les besoins en termes de recrutement (vacataires manquants, sollictés pour certains cours, etc) et les vacataires en cours de recrutement (mais n'intervenant pas encore). Les vacataires concernés doivent aussi pouvoir se connecter afin de visualiser voire modifier leurs informations.
+
+== II. Description des principaux besoins
+Le principal interface et surtout les données ne doivent pas être accessibles/récuperables tant que les utilisateurs ne sont pas connectés en tant que vacataire ou responsable.
+
+=== 1. Responsables des vacataires (adminisateur)
+* Consultation/modification données responsables de vacataires
+
+==== Vacataires
+* Listage vacataires postulants et intervenants
+* Ajout/consultation/modification données vacataires
+* Ajout/consultation/suppression associations avec cours/compétences
+* Ajout/suppression formations
+* Recrutement vacataires postulants
+* Archivage
+
+==== Cours
+* Listage cours par départements
+* Ajout/consultation/modification données cours
+* Consultation associations vacataires
+* Archivage
+
+==== Profils recherchés
+* Listage profils recherchés
+* Ajout/consultation/modification données profils recherchés
+* Ajout/consultation/suppression associations avec compétences
+* Consultation associations vacataires (de type postulant)
+* Archivage
+
+==== Professeurs référents
+* Listage professeurs référents
+* Ajout/consultation/modification données professeurs référents
+* Consultation associations cours
+* Archivage
+
+=== 2. Vacataires
+* Ajout/consultation/modification données vacataires
+* Ajout/consultation/suppression associations avec cours/compétences
+* Ajout/suppression formations
+
+Les données de l'interface développé par notre équipe doivent être stockées dans une base de données distincte de celle de https://flopedt.iut-blagnac.fr/[FlopEDT], mais les données doivent tout de même être synchronisées. Càd que lorsque des données sont modifiées dans le base de Flop, elles doivent aussi l'être dans celle de notre interface et inversément.
+
+== III. Notre équipe
+Notre formidable équipe a décidé d'utiliser la technologie https://angular.io/[Angular] pour répondre aux besoins de l'IUT de Blagnac, celle-ci étant adaptée à la création d'un interface web optimisé permettant la récupération, le traitement et l'affichage de données.
+
+* Baptiste BESSON (alternant)
+* Maxime DOURLENT (alternant aka LeTardif ENRETARD)
+* Baptiste FROMENT (alternant)
+* Tilian HURÉ (SCRUM Master un peu sus)
+* Lucas MORIN (alternant)
+* Tobiasz STRZESZEWSKI (apiculteur (cultivateur d'API))
+* Louis YVELIN (épicurien fan d'assembleur (le plus sus de tous))
+
+== IV. Nos réalisations
+* Vidéos :
+** https://youtu.be/CyjlQ4mkF4A[Présentation de l'application]
+* link:./[Code source de l'application Angular]
+* link:./database/creation_tables.sql[Script SQL de création des tables de la base de données]
+* link:./api/[Code PHP de configuration de l'API REST utilisée par l'interface]
+* link:./scripts/insert_responsable.py[Script Python d'insertion d'un responsable de vacataires]
+* Documentation :
+** link:./documentation/Analyse_impact.adoc[Analyse d'impact, RGPD]
+** link:./documentation/Installation_et_déploiement.adoc[Installation et déploiement de l'application et de ses dépendances]
+** link:documentation/Structure_et_description_technique.adoc[Structure et fonctionnalités techniques de l'application (et autres composants)]
+** link:documentation/Documentation_utilisateur.adoc[Documentation utilisateur de l'application]
+** link:documentation/Cahier_de_recette.adoc[Cahier de recette de l'application]
+
+== V. Liens utiles
+* https://sae5.yvelin.net/[*VERSION DE TEST* de l'application permettant de voir l'évolution de cette dernière]
+* https://github.com/users/tobilub04/projects/1[Projet du dépôt avec les tâches à réaliser attribuées, leur avancement, user-stories, sprints, etc]
+* https://sae5.yvelin.net/phpmyadmin/[Base de données _temporaire ?_ gérant les données traitées par l'interface (nécessite des identifiants de connexion)]
+* API utilisée par l'interface pour interagir avec la base de données :
+** https://sae5.yvelin.net/api/auth[Gestion de la connexion]
+** https://sae5.yvelin.net/api/vacataires[Données des vacataires]
+** https://sae5.yvelin.net/api/responsables-vacataires[Données des responsables des vacataires]
+** https://sae5.yvelin.net/api/cours[Données des cours]
+** https://sae5.yvelin.net/api/departements[Données des départements]
+** https://sae5.yvelin.net/api/competences[Données des compétences]
+** https://sae5.yvelin.net/api/professeurs-referents[Données des professeurs référents]
+** https://sae5.yvelin.net/api/profils-recherches[Données des profils recherchés]
+** https://sae5.yvelin.net/api/posseder[Données des associations entre les vacataires/profils recherchés et les compétences]
+** https://sae5.yvelin.net/api/departements[Données des vacataires (intervenants) et les cours]
+* https://flopedt.iut-blagnac.fr/en/api/doc[Documentation de l'API de FlopEDT]

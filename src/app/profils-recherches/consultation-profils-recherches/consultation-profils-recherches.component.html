@@ -1,0 +1,110 @@
+<div class="d-flex flex-column gap-5 p-5 border w-100 h-100" style="border-radius: 5px">
+
+  <!-- Modifier et archiver -->
+  <div class="d-flex flex-wrap gap-2 justify-content-between w-100">
+    <h2 class="m-0 text-primary">Profil recherché</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <button type="button" class="btn btn-primary d-flex align-items-center gap-2" [routerLink]="['/profils-recherches/modifier/'+profilRecherche.ID]" routerLinkActive="router-link-active" >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+        </svg>
+        Modifier
+      </button>
+      <button (click)="showArchiverModal = true" type="button" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="isArchiving">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-archive-fill" viewBox="0 0 16 16">
+          <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zM.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8H.8z"/>
+        </svg>
+        Archiver
+        <div *ngIf="isArchiving" class="spinner-border spinner-border-sm text-white" role="status"></div>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Profil -->
+  <div>
+    <h3 class="fw-bold">{{ profilRecherche.libelle }}</h3>
+    <p *ngIf="!profilRecherche.description" class="text-muted m-0">Pas de description</p>
+    <p *ngIf="profilRecherche.description" class="m-0 description-carte">{{ profilRecherche.description }}</p>
+  </div>
+
+  <!-- Ajout, suppression et listage des compétences -->
+  <div>
+    <p *ngIf="!profilRecherche.competences.length" class="text-muted">Aucune compétence</p>
+    <h3 *ngIf="profilRecherche.competences.length">Compétences</h3>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span *ngFor="let competence of profilRecherche.competences" class="competence position-relative badge rounded-pill bg-primary d-flex align-items-center">
+        {{ competence.libelle }}
+        <span (click)="supprimerCompetence(competence.libelle)" class="position-absolute bg-primary end-0 pt-1 pb-1 w-100" style="border-radius: 50%; opacity: 0">X</span>
+      </span>
+      <form (ngSubmit)="ajouterCompetence()" #competencesForm="ngForm" class="w-50">
+        <div class="d-flex align-items-center gap-2">
+          <input [(ngModel)]="libelleNouvelleCompetence" autocomplete="off" list="programmingLanguages" maxlength="30" class="border-0 border-bottom bg-transparent" type="text" placeholder="Nouvelle compétence" name="saisie-competence" id="saisie-competence" style="outline: none" [disabled]="addingCompetence"><div *ngIf="addingCompetence" class="spinner-border spinner-border-sm text-black" role="status"></div>
+        </div>
+        <datalist id="programmingLanguages">
+          <option *ngFor="let competence of competencesAvailable" [value]="competence.libelle">{{ competence.libelle }}</option>
+        </datalist>
+      </form>
+    </div>
+  </div>
+
+  <!-- Listage des postulants correspondant au profil recherché -->
+  <p *ngIf="!postulantsCorrespondant.length" class="text-muted">Aucun vacataire postulant ne correspond au profil recherché</p>
+  <div *ngIf="postulantsCorrespondant.length">
+    <h3>{{ postulantsCorrespondant.length }} vacataire(s) postulant(s) correspond(ent) au profil recherché :</h3>
+    <div class="row row-cols-1 row-cols-md-4">
+      <div *ngFor="let vacataire of postulantsCorrespondant" class="col mb-3 ps-2 pe-2">
+
+        <!-- Carte vacataire -->
+        <div  routerLink="{{ '/vacataires/profil/' + vacataire.ID }}" class="card h-100 card-vacataire pt-2 pb-2" style="cursor: pointer">
+          <div class="card-body d-flex flex-column align-items-center gap-3 ps-5 pe-5">
+            <div class="d-flex flex-column align-items-center text-center gap-1">
+              <h4 class="m-0">{{ vacataire.prenom + ' ' + vacataire.nom }}</h4>
+              <h6 class="m-0 text-muted" style="display:-webkit-box; -webkit-box-orient:vertical; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:2;">{{ vacataire.description }}</h6>
+            </div>
+            <div *ngIf="vacataire.photoIdentite" class="profil-img border" [ngStyle]="{'background-image':'url('+imageURL+vacataire.photoIdentite+')'}"></div>
+            <svg *ngIf="!vacataire.photoIdentite" xmlns="http://www.w3.org/2000/svg" fill="lightgray" class="border profil-img bi bi-person-fill p-4" viewBox="0 0 16 16" style="background-color: whitesmoke">
+              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+            </svg>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+              <small *ngIf="!vacataire.competences.length" class="text-muted">Aucune compétence</small>
+              <div *ngFor="let competence of vacataire.competences.slice(0, 4)" class="badge rounded-pill bg-info">{{ competence.libelle }}</div>
+              <small class="text-muted" *ngIf="vacataire.competences.length > 4">et {{ vacataire.competences.length - 4 }} autres</small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Modal archivage -->
+<div *ngIf="showArchiverModal" class="modal d-flex justify-content-center align-items-center position-fixed top-0 start-0" style="width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.6)">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Archivage du vacataire</h5>
+        <button (click)="showArchiverModal = false" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Archiver le profil recherché ? Ce dernier sera conservé en base de données mais plus affiché dans l'interface. Toutes ses associations avec les compétences seront supprimées.</p>
+      </div>
+      <div class="modal-footer">
+        <button (click)="archiver()" type="button" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="isArchiving">Archiver <div *ngIf="isArchiving" class="spinner-border spinner-border-sm text-white" role="status"></div></button>
+        <button (click)="showArchiverModal = false" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

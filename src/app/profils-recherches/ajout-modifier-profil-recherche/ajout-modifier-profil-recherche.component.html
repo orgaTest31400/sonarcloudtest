@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-center align-items-center w-100 h-100">
+  <div class="d-flex flex-column gap-3" style="max-width: 650px">
+    <h1 class="text-center">{{ modePage == ModeAjoutModif.AJOUT ? 'Ajouter un profil recherché' : 'Modifier un profil recherché' }}</h1>
+    <form (ngSubmit)="onSubmit(rechercheForm)" #rechercheForm="ngForm" class="d-flex flex-column gap-3">
+      <div class="form-group">
+        <label for="libelle">Libellé <span class="text-primary">*</span></label>
+        <input type="text" maxlength="250" class="form-control" id="libelle" name="libelle" [(ngModel)]="profilRecherche.libelle" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" [(ngModel)]="profilRecherche.description"></textarea>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="rechercheForm.invalid || enCoursDeModification">Confirmer<div *ngIf="enCoursDeModification" class="spinner-border spinner-border-sm text-white" role="status"></div></button>
+        <button type="button" class="btn btn-secondary" (click)="location.back()">Retour</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

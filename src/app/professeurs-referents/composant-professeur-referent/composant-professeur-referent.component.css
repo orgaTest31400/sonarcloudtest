@@ -1,0 +1,18 @@
+.card-professeur-referent .profil-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.card:hover{
+  background-color: rgb(245, 245, 245);
+}
+
+.discord-clipboard {
+  font-family: consolas;
+  border: 1px var(--bs-success-text-emphasis) solid;
+  margin-left: .5em;
+  padding: .1em;
+}

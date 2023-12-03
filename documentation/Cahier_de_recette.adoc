@@ -1,0 +1,229 @@
+= Cahier de recette
+:toc:
+:toc-title: Sommaire
+:toclevels: 4
+
+== I. Contexte et concept
+L'administration de l'IUT de Blagnac souhaite disposer d'un outil lui permettant de gérer ses vacataires, les cours sur lesquels ils interviennent, mais aussi les profils de vacataires recherchés. La solution technique développée (GVIUTB) permet à des responsables de vacataires d'ajouter/modifier, visualiser, et supprimer (archiver) des vacataires, des cours, des professeurs référents et des profils de vacataires recherchés, tout en assurant la sécurité des données manipulées.
+
+Ce document détaille l'ensemble de tests qui ont été réalisés pour attester du bon fonctionnement de chaque fonctionnalité développée.
+
+== II. Environnement de test
+Ces tests ont été réalisés avec une version de test de l'application mise en place sur nos serveurs (HTTPS). Pour les reproduire, voir les link:Installation_et_déploiement.adoc[prérequis et installations nécessaires au déploiement de l'application] si besoin.
+
+== III. Tests effectués pour chaque fonctionnalité
+=== 1. Sécurisation des routes
+|====
+^|*Cas de test* 2+|Test-01
+^|*Titre* 2+|Tentatives d'accès
+^|*Objectif* 2+| Vérifier que seules certaines pages sont accessibles en fonction du type de l'utilisateur connecté
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Accéder à une page via l'URL sans être connecté |Redirection vers le formulaire de connexion ^|OK
+|Accéder à une page via l'URL en étant connecté en tant que responsable de vacataire |Redirection vers la page correspondante (appart pour les données d'autres responsables) ^|OK
+|Accéder à une page via l'URL en étant connecté en tant que vacataire |Redirection vers la page de consultation du profil vacataire ^|OK
+|====
+
+=== 2. Gestion des vacataires
+
+==== 2.1. Listage et filtrage des vacataires
+|====
+^|*Cas de test* 2+|Test-02-01-01
+^|*Titre* 2+|Listage et filtrage des vacataires
+^|*Objectif* 2+| Vérifier la fonctionnalité de listage et de filtrage des vacataires
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Filtrer les vacataires par critères spécifiques |Affichage de la liste des vacataires conformes aux critères sélectionnés ^|OK
+|====
+
+==== 2.2. Ajout et modification d'un vacataire
+|====
+^|*Cas de test* 2+|Test-02-01-02
+^|*Titre* 2+|Ajout et modification d'un vacataire
+^|*Objectif* 2+| Vérifier la possibilité d'ajouter et de modifier un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Ajouter un vacataire avec des données valides |Vacataire ajouté avec succès ^|OK
+|Modifier les données d'un vacataire existant |Données du vacataire mises à jour ^|OK
+|====
+
+==== 2.3. Consultation du profil d'un vacataire
+|====
+^|*Cas de test* 2+|Test-02-01-03
+^|*Titre* 2+|Consultation du profil d'un vacataire
+^|*Objectif* 2+| Vérifier la possibilité de consulter le profil d'un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Consulter le profil d'un vacataire |Affichage des informations du vacataire ^|OK
+|====
+
+==== 2.4. Ajout de formations
+|====
+^|*Cas de test* 2+|Test-02-01-04
+^|*Titre* 2+|Ajout de formations
+^|*Objectif* 2+| Vérifier la possibilité d'ajouter des formations à un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Ajouter une formation au profil d'un vacataire |Formation ajoutée avec succès au profil du vacataire ^|OK
+|====
+
+==== 2.5. Association avec des compétences
+|====
+^|*Cas de test* 2+|Test-02-01-05
+^|*Titre* 2+|Association avec des compétences
+^|*Objectif* 2+| Vérifier la possibilité d'associer des compétences à un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Associer des compétences au profil d'un vacataire |Compétences associées au profil du vacataire ^|OK
+|Dissocier des compétences du profil d'un vacataire |Compétences dissociées du profil du vacataire ^|OK
+|====
+
+==== 2.6. Association avec des cours
+|====
+^|*Cas de test* 2+|Test-02-01-06
+^|*Titre* 2+|Association avec des cours
+^|*Objectif* 2+| Vérifier la possibilité d'associer des cours à un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Associer des cours au profil d'un vacataire |Cours associés au profil du vacataire ^|OK
+|Dissocier des cours du profil d'un vacataire |Cours dissociés du profil du vacataire ^|OK
+|====
+
+==== 2.7. Archivage d'un vacataire
+|====
+^|*Cas de test* 2+|Test-02-01-07
+^|*Titre* 2+|Archivage d'un vacataire
+^|*Objectif* 2+| Vérifier la possibilité d'archiver un vacataire
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Archiver un vacataire |Vacataire archivé avec succès ^|OK
+|====
+
+=== 3. Gestion des cours
+
+==== 3.1. Listage et filtrage des cours
+|====
+^|*Cas de test* 2+|Test-03-01-01
+^|*Titre* 2+|Listage et filtrage des cours
+^|*Objectif* 2+| Vérifier la fonctionnalité de listage et de filtrage des cours
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Filtrer les cours par critères spécifiques |Affichage de la liste des cours conformes aux critères sélectionnés ^|OK
+|====
+
+==== 3.2. Ajout et modification d'un cours
+|====
+^|*Cas de test* 2+|Test-03-01-02
+^|*Titre* 2+|Ajout et modification d'un cours
+^|*Objectif* 2+| Vérifier la possibilité d'ajouter et de modifier un cours
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Ajouter un cours avec des données valides |Cours ajouté avec succès ^|OK
+|Modifier les données d'un cours existant |Données du cours mises à jour ^|OK
+|====
+
+==== 3.3. Consultation d'un cours
+|====
+^|*Cas de test* 2+|Test-03-01-03
+^|*Titre* 2+|Consultation d'un cours
+^|*Objectif* 2+| Vérifier la possibilité de consulter un cours
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Consulter un cours |Affichage des informations du cours ^|OK
+|====
+
+==== 3.4. Archivage d'un cours
+|====
+^|*Cas de test* 2+|Test-03-01-04
+^|*Titre* 2+|Archivage d'un cours
+^|*Objectif* 2+| Vérifier la possibilité d'archiver un cours
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Archiver un cours |Cours archivé avec succès ^|OK
+|====
+
+=== 4. Gestion des profils recherchés
+
+==== 4.1. Listage et filtrage des profils recherchés
+|====
+^|*Cas de test* 2+|Test-04-01-01
+^|*Titre* 2+|Listage et filtrage des profils recherchés
+^|*Objectif* 2+| Vérifier la fonctionnalité de listage et de filtrage des profils recherchés
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Filtrer les profils recherchés par critères spécifiques |Affichage de la liste des profils recherchés conformes aux critères sélectionnés ^|OK
+|====
+
+==== 4.2. Ajout et modification d'un profil recherché
+|====
+^|*Cas de test* 2+|Test-04-01-02
+^|*Titre* 2+|Ajout et modification d'un profil recherché
+^|*Objectif* 2+| Vérifier la possibilité d'ajouter et de modifier un profil recherché
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Ajouter un profil recherché avec des données valides |Profil recherché ajouté avec succès ^|OK
+|Modifier les données d'un profil recherché existant |Données du profil recherché mises à jour ^|OK
+|====
+
+==== 4.3. Consultation d'un profil recherché
+|====
+^|*Cas de test* 2+|Test-04-01-03
+^|*Titre* 2+|Consultation d'un profil recherché
+^|*Objectif* 2+| Vérifier la possibilité de consulter un profil recherché
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Consulter un profil recherché |Affichage des informations du profil recherché ^|OK
+|====
+
+==== 4.4. Association avec des compétences
+|====
+^|*Cas de test* 2+|Test-04-01-04
+^|*Titre* 2+|Association avec des compétences
+^|*Objectif* 2+| Vérifier la possibilité d'associer des compétences à un profil recherché
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Associer des compétences au profil recherché |Compétences associées au profil recherché ^|OK
+|Dissocier des compétences du profil recherché |Compétences dissociées du profil recherché ^|OK
+|====
+
+==== 4.5. Archivage d'un profil recherché
+|====
+^|*Cas de test* 2+|Test-04-01-05
+^|*Titre* 2+|Archivage d'un profil recherché
+^|*Objectif* 2+| Vérifier la possibilité d'archiver un profil recherché
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Archiver un profil recherché |Profil recherché archivé avec succès ^|OK
+|====
+
+=== 5. Gestion des professeurs référents
+
+==== 5.1. Listage et filtrage des professeurs référents
+|====
+^|*Cas de test* 2+|Test-05-01-01
+^|*Titre* 2+|Listage et filtrage des professeurs référents
+^|*Objectif* 2+| Vérifier la fonctionnalité de listage et de filtrage des professeurs référents
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Filtrer les professeurs référents par critères spécifiques |Affichage de la liste des professeurs référents conformes aux critères sélectionnés ^|OK
+|====
+
+==== 5.2. Ajout et modification d'un professeur référent
+|====
+^|*Cas de test* 2+|Test-05-01-02
+^|*Titre* 2+|Ajout et modification d'un professeur référent
+^|*Objectif* 2+| Vérifier la possibilité d'ajouter et de modifier un professeur référent
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Ajouter un professeur référent avec des données valides |Professeur référent ajouté avec succès ^|OK
+|Modifier les données d'un professeur référent existant |Données du professeur référent mises à jour ^|OK
+|====
+
+==== 5.3. Consultation du profil d'un professeur référent
+|====
+^|*Cas de test* 2+|Test-05-01-03
+^|*Titre* 2+|Consultation du profil d'un professeur référent
+^|*Objectif* 2+| Vérifier la possibilité de consulter le profil d'un professeur référent
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Consulter le profil d'un professeur référent |Affichage des informations du professeur référent ^|OK
+|====
+
+==== 5.4. Archivage d'un professeur référent
+|====
+^|*Cas de test* 2+|Test-05-01-04
+^|*Titre* 2+|Archivage d'un professeur référent
+^|*Objectif* 2+| Vérifier la possibilité d'archiver un professeur référent
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Archiver un professeur référent |Professeur référent archivé avec succès ^|OK
+|====
+
+=== 6. Consultation et modification du profil d'un responsable de vacataires
+|====
+^|*Cas de test* 2+|Test-06-01
+^|*Titre* 2+|Consultation et modification du profil d'un responsable de vacataires
+^|*Objectif* 2+| Vérifier la possibilité de consulter et de modifier le profil d'un responsable de vacataires
+^|*Action* ^|*Comportement attendu* ^|*Résultat*
+|Consulter le profil d'un responsable de vacataires |Affichage des informations du responsable de vacataires ^|OK
+|Modifier le profil d'un responsable de vacataires |Données du responsable de vacataires mises à jour ^|OK
+|====

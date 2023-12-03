@@ -1,0 +1,231 @@
+<div class="d-flex profil-vacataire border w-100 h-100" style="border-radius: 5px">
+
+  <!-- Partie gauche -->
+  <div class="d-flex flex-column gap-4 p-5">
+
+    <!-- Profil -->
+    <div class="d-flex flex-column align-items-center text-center gap-2">
+      <h2 *ngIf="vacataire.statut == TypeProfil.INTERVENANT" class="m-0 text-success">Intervenant</h2>
+      <h2 *ngIf="vacataire.statut == TypeProfil.POSTULANT" class="m-0 text-info">Postulant</h2>
+      <div *ngIf="vacataire.photoIdentite" class="profil-img border" [ngStyle]="{'background-image':'url('+imageUrl+vacataire.photoIdentite+')'}"></div>
+      <svg *ngIf="!vacataire.photoIdentite" xmlns="http://www.w3.org/2000/svg" fill="lightgray" class="border profil-img bi bi-person-fill p-4" viewBox="0 0 16 16" style="background-color: whitesmoke">
+        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+      </svg>
+      <h3 class="m-0 fw-bold">{{ vacataire.prenom + ' ' + vacataire.nom }}</h3>
+      <div class="d-flex flex-column gap-1 text-center">
+        <span>A candidaté le {{ vacataire.dateCandidature | frenchDate }}</span>
+        <span *ngIf="vacataire.dateRecrutement">Recruté le {{ vacataire.dateRecrutement | frenchDate }}</span>
+      </div>
+    </div>
+
+    <!-- Voir le CV, recruter, modifier et archiver -->
+    <div class="d-flex flex-column align-items-center gap-2">
+      <a *ngIf="vacataire.cv" [href]="imageUrl+vacataire.cv" target="_blank" class="btn btn-secondary d-flex gap-2 align-items-center justify-content-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="black" class="bi bi-file-earmark-person" viewBox="0 0 16 16">
+          <path d="M11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+          <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2v9.255S12 12 8 12s-5 1.755-5 1.755V2a1 1 0 0 1 1-1h5.5v2z"/>
+        </svg>
+        Voir le CV
+      </a>
+      <button (click)="showRecruterModal = true" *ngIf="isResponsable && vacataire.statut == TypeProfil.POSTULANT" type="button" class="btn btn-info d-flex align-items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="white" viewBox="0 -960 960 960">
+          <path d="M475-160q4 0 8-2t6-4l328-328q12-12 17.5-27t5.5-30q0-16-5.5-30.5T817-607L647-777q-11-12-25.5-17.5T591-800q-15 0-30 5.5T534-777l-11 11 74 75q15 14 22 32t7 38q0 42-28.5 70.5T527-522q-20 0-38.5-7T456-550l-75-74-175 175q-3 3-4.5 6.5T200-435q0 8 6 14.5t14 6.5q4 0 8-2t6-4l136-136 56 56-135 136q-3 3-4.5 6.5T285-350q0 8 6 14t14 6q4 0 8-2t6-4l136-135 56 56-135 136q-3 2-4.5 6t-1.5 8q0 8 6 14t14 6q4 0 7.5-1.5t6.5-4.5l136-135 56 56-136 136q-3 3-4.5 6.5T454-180q0 8 6.5 14t14.5 6Zm-1 80q-37 0-65.5-24.5T375-166q-34-5-57-28t-28-57q-34-5-56.5-28.5T206-336q-38-5-62-33t-24-66q0-20 7.5-38.5T149-506l232-231 131 131q2 3 6 4.5t8 1.5q9 0 15-5.5t6-14.5q0-4-1.5-8t-4.5-6L398-777q-11-12-25.5-17.5T342-800q-15 0-30 5.5T285-777L144-635q-9 9-15 21t-8 24q-2 12 0 24.5t8 23.5l-58 58q-17-23-25-50.5T40-590q2-28 14-54.5T87-692l141-141q24-23 53.5-35t60.5-12q31 0 60.5 12t52.5 35l11 11 11-11q24-23 53.5-35t60.5-12q31 0 60.5 12t52.5 35l169 169q23 23 35 53t12 61q0 31-12 60.5T873-437L545-110q-14 14-32.5 22T474-80Zm-99-560Z"/>
+        </svg>
+        Recruter
+      </button>
+      <button type="button" [ngClass]="{'btn-info': vacataire.statut == TypeProfil.POSTULANT, 'btn-success': vacataire.statut == TypeProfil.INTERVENANT}" class="btn d-flex align-items-center gap-2" [routerLink]="['/vacataires/modifier/'+vacataire.ID]" routerLinkActive="router-link-active" >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+        </svg>
+        Modifier
+      </button>
+      <button (click)="showArchiverModal = true" *ngIf="isResponsable" type="button" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="isArchiving">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-archive-fill" viewBox="0 0 16 16">
+          <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zM.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8H.8z"/>
+        </svg>
+        Archiver
+        <div *ngIf="isArchiving" class="spinner-border spinner-border-sm text-white" role="status"></div>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Partie droite -->
+  <div class="d-flex flex-column gap-5 partie-droite border-start border-top p-5">
+
+    <!-- Description -->
+    <div>
+      <h3>À propos de moi</h3>
+      <p *ngIf="!vacataire.description" class="text-muted m-0">Pas de description</p>
+      <p *ngIf="vacataire.description" class="m-0 description-carte">{{ vacataire.description }}</p>
+    </div>
+
+    <!-- Contacts -->
+    <div>
+      <h3>Me contacter</h3>
+      <div class="d-flex flex-column gap-1">
+        <a *ngIf="vacataire.adresseEmail" href="mailto:{{ vacataire.adresseEmail }}" class="d-flex gap-2 align-items-center" style="width: fit-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" fill="black" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+          </svg>
+          <span>{{ vacataire.adresseEmail }}</span>
+        </a>
+        <a *ngIf="vacataire.numeroTelephone" href="tel:{{ vacataire.numeroTelephone }}" class="d-flex gap-2 align-items-center" style="width: fit-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 512 512">
+            <path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/>
+          </svg>
+          <span>{{ vacataire.numeroTelephone }}</span>
+        </a>
+        <a (click)="copyDiscord()" *ngIf="vacataire.tagDiscord" class="d-flex gap-2 align-items-center" style="width: fit-content; cursor: pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" fill="black" class="bi bi-discord" viewBox="0 0 16 16">
+            <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+          </svg>
+          <span>{{ vacataire.tagDiscord }}</span>
+        </a>
+        <a *ngIf="vacataire.lienProfilGitHub" href="https://{{ vacataire.lienProfilGitHub }}" target="_blank" class="d-flex gap-2 align-items-center" style="width: fit-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" fill="black" class="bi bi-github" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>{{ vacataire.lienProfilGitHub }}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Ajout, suppression et listage des formations -->
+    <div>
+      <p *ngIf="!vacataire.formations.length" class="text-muted">Aucune formation</p>
+      <h3 *ngIf="vacataire.formations.length">Formations</h3>
+      <ul class="mb-2">
+        <li *ngFor="let formation of vacataire.formations; let indexFormation = index" class="formation lh-lg" style="width: fit-content">
+          <div class="d-flex align-items-center gap-2">
+            <span>{{formation }}</span>
+            <svg (click)="supprimerFormation(indexFormation)" xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" fill="black" class="opacity-0 bi bi-x-circle-fill" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+            </svg>
+          </div>
+        </li>
+      </ul>
+      <form (ngSubmit)="ajouterFormation()" #formationForm="ngForm" class="w-50 d-flex align-items-center gap-2">
+        <input [(ngModel)]="nouvelleFormation" maxlength="150" class="border-0 border-bottom bg-transparent" type="text" placeholder="Nouvelle formation" name="saisie-formation" id="saisie-formation" style="outline: none" [disabled]="addingFormation"> <div *ngIf="addingFormation" class="spinner-border spinner-border-sm text-black" role="status"></div>
+      </form>
+    </div>
+
+    <!-- Ajout, suppression et listage des compétences -->
+    <div>
+      <p *ngIf="!vacataire.competences.length" class="text-muted">Aucune compétence</p>
+      <h3 *ngIf="vacataire.competences.length">Compétences</h3>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span *ngFor="let competence of vacataire.competences" [ngClass]="{'btn-info': vacataire.statut == TypeProfil.POSTULANT, 'btn-success': vacataire.statut == TypeProfil.INTERVENANT}" class="competence position-relative badge rounded-pill d-flex align-items-center">
+        {{ competence.libelle }}
+        <span (click)="supprimerCompetence(competence.libelle)" [ngClass]="{'btn-info': vacataire.statut == TypeProfil.POSTULANT, 'btn-success': vacataire.statut == TypeProfil.INTERVENANT}" class="position-absolute border-0 end-0 pb-1 pt-1 w-100" style="border-radius: 50%; opacity: 0">X</span>
+      </span>
+        <form (ngSubmit)="ajouterCompetence()" #competencesForm="ngForm" class="w-50 d-flex align-items-center gap-2">
+          <input [(ngModel)]="libelleNouvelleCompetence" autocomplete="off" list="programmingLanguages" maxlength="30" class="border-0 border-bottom bg-transparent" type="text" placeholder="Nouvelle compétence" name="saisie-competence" id="saisie-competence" style="outline: none" [disabled]="addingCompetence"> <div *ngIf="addingCompetence" class="spinner-border spinner-border-sm text-black" role="status"></div>
+          <datalist id="programmingLanguages">
+            <option *ngFor="let competence of competencesAvailable" [value]="competence.libelle">{{ competence.libelle }}</option>
+          </datalist>
+        </form>
+      </div>
+    </div>
+
+    <!-- Faire intervenir le vacataire sur un nouveau cours -->
+    <div *ngIf="showCoursVacataire">
+      <h3>Faire intervenir sur un nouveau cours</h3>
+      <div class="d-flex gap-3 flex-wrap">
+        <select [(ngModel)]="selectedDeptID" (change)="trierCoursParDept()" class="form-select" name="select-dept" style="flex: 2 0" required="true">
+          <option [value]="NaN" selected disabled>Choisir un département</option>
+          <option *ngFor="let dept of departementsAvailable" [value]="dept.ID">{{ dept.libelle }}</option>
+        </select>
+        <select [(ngModel)]="selectedCoursID" [disabled]="!selectedDeptID" class="form-select" name="select-cours" style="flex: 2 0" required="true">
+          <option [value]="NaN" selected disabled>Choisir un cours</option>
+          <option *ngFor="let cours of coursFiltres" [value]="cours.ID">{{ cours.libelle }}</option>
+        </select>
+        <button (click)="ajouterAssociationCours()" [disabled]="!selectedDeptID || isNaN(selectedCoursID) || addingCours" type="submit" class="btn btn-success d-flex align-items-center gap-2">Ajouter <div *ngIf="addingCours" class="spinner-border spinner-border-sm text-white" role="status"></div></button>
+      </div>
+    </div>
+
+    <!-- Listage des cours sur lesquels le vacataire intervient -->
+    <p *ngIf="!coursVacataire.size && showCoursVacataire" class="text-muted">N'intervient sur aucun cours</p>
+    <div *ngIf="showCoursVacataire && coursVacataire.size">
+      <h3>Intervient sur {{ nbCoursVacataire }} cours</h3>
+      <div class="d-flex gap-3 flex-wrap">
+
+        <!-- Cours par départements -->
+        <div *ngFor="let dept of coursVacataire | keyvalue" class="d-flex flex-column gap-1">
+          <h4 class="text-muted">{{ 'Département ' + dept.key }}</h4>
+          <div class="d-flex gap-2 text-nowrap flex-wrap" style="overflow-x: auto">
+
+            <!-- Carte cours -->
+            <div *ngFor="let cours of dept.value" class="card card-cours position-relative text-wrap">
+              <button (click)="supprimerAssociationCours(cours.ID)" class="position-absolute mt-2 me-2 top-0 end-0 btn btn-primary remove-cours opacity-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                  <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+                </svg>
+              </button>
+              <div class="card-body">
+                <div class="d-flex flex-column gap-3">
+                  <div routerLink="{{ '/cours/consultation/'+cours.ID }}" class="d-flex flex-column gap-1" style="cursor: pointer">
+                    <h3 class="card-title m-0">{{ cours.libelle }}</h3>
+                    <p *ngIf="!cours.professeurReferent" class="m-0 text-muted">Pas de professeur référent</p>
+                    <p *ngIf="cours.professeurReferent" class="card-text m-0 text-muted">Professeur référent : {{ cours.professeurReferent.prenom + ' ' + cours.professeurReferent.nom }}</p>
+                  </div>
+                  <small *ngIf="!cours.vacataires.length" class="text-muted">Aucun vacataire n'intervient sur ce cours</small>
+                  <div *ngIf="cours.vacataires.length">
+                    <p class="mb-0">{{ cours.vacataires.length }} vacataire(s) intervenant :</p>
+                    <p class="mb-0" style="display:-webkit-box; -webkit-box-orient:vertical; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:2;">
+                      <span *ngFor="let vacataire of cours.vacataires; let last = last">
+                        <a (click)="consulterProfilVacataire(vacataire.ID)" class="link" style="cursor: pointer">{{ vacataire.prenom + ' ' + vacataire.nom}}</a>{{(!last ? ', ' : '')}}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ratio-vacataires d-flex justify-content-between">
+                <div [ngClass]="{'text-primary': cours.vacataires.length != cours.nbVacatairesNecessaires}">{{ cours.vacataires.length }} / {{ cours.nbVacatairesNecessaires }}</div>
+                <div>{{ cours.nbVacatairesNecessaires - cours.vacataires.length }} poste{{
+                  cours.nbVacatairesNecessaires - cours.vacataires.length > 1 ? 's' : '' }} libre{{
+                  cours.nbVacatairesNecessaires - cours.vacataires.length > 1 ? 's' : '' }}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Modal -->
+<div *ngIf="showArchiverModal || showRecruterModal" class="modal d-flex justify-content-center align-items-center position-fixed top-0 start-0" style="width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.6)">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 *ngIf="showArchiverModal" class="modal-title">Archivage du vacataire</h5>
+        <h5 *ngIf="showRecruterModal" class="modal-title">Recruter le vacataire</h5>
+        <button (click)="showArchiverModal = false; showRecruterModal = false" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="showArchiverModal">Archiver le vacataire ? Ce dernier sera conservé en base de données mais plus affiché dans l'interface. Toutes ses associations avec les cours et les compétences seront supprimées.</p>
+        <p *ngIf="showRecruterModal">Recruter le vacataire ? Son statut passera de postulant à intervenant et il sera possible de le faire intervenir sur des cours.</p><p *ngIf="showArchiverModal">
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="showArchiverModal" (click)="archiver()" type="button" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="isArchiving">Archiver <div *ngIf="isArchiving" class="spinner-border spinner-border-sm text-white" role="status"></div></button>
+        <button *ngIf="showRecruterModal" (click)="recruter()" type="button" class="btn btn-info">Recruter</button>
+        <button (click)="showArchiverModal = false; showRecruterModal = false" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Message d'erreur/notification -->
+<div *ngIf="alertText" id="alert-container" [ngClass]="{'alert-success': clipboardNotif, 'alert-primary': !clipboardNotif}" class="alert alert-dismissible position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''; clipboardNotif = false;" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

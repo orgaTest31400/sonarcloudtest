@@ -1,0 +1,26 @@
+<div class="card h-100">
+  <div class="card-body">
+    <div class="d-flex flex-column gap-3">
+      <div routerLink="{{ '/cours/consultation/'+coursItem.ID }}" class="d-flex flex-column gap-1" style="cursor: pointer">
+        <h3 class="card-title m-0">{{ coursItem.libelle }}</h3>
+        <p *ngIf="!coursItem.professeurReferent" class="m-0 text-muted">Pas de professeur référent</p>
+        <p *ngIf="coursItem.professeurReferent" class="card-text m-0 text-muted">Professeur référent : {{ coursItem.professeurReferent.prenom + ' ' + coursItem.professeurReferent.nom }}</p>
+      </div>
+      <small *ngIf="!coursItem.vacataires.length" class="text-muted">Aucun vacataire n'intervient sur ce cours</small>
+      <div *ngIf="coursItem.vacataires.length">
+        <p class="mb-0">{{ coursItem.vacataires.length }} vacataire(s) intervenant :</p>
+        <p class="mb-0" style="display:-webkit-box; -webkit-box-orient:vertical; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:2;">
+        <span *ngFor="let vacataire of coursItem.vacataires; let last = last">
+          <a class="" routerLink="{{ '/vacataires/profil/'+vacataire.ID }}">{{ vacataire.prenom + ' ' + vacataire.nom}}</a>{{(!last ? ', ' : '')}}
+        </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer ratio-vacataires d-flex justify-content-between">
+    <div [ngClass]="{'text-primary': coursItem.vacataires.length != coursItem.nbVacatairesNecessaires}">{{ coursItem.vacataires.length }} / {{ coursItem.nbVacatairesNecessaires }}</div>
+    <div>{{ coursItem.nbVacatairesNecessaires - coursItem.vacataires.length }} poste{{
+      coursItem.nbVacatairesNecessaires - coursItem.vacataires.length > 1 ? 's' : '' }} libre{{
+      coursItem.nbVacatairesNecessaires - coursItem.vacataires.length > 1 ? 's' : '' }}</div>
+  </div>
+</div>

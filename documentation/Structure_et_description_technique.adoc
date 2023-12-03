@@ -1,0 +1,460 @@
+= Structure et description technique
+:toc:
+:toc-title: Sommaire
+:toclevels: 4
+
+== I. Contexte et concept
+L'administration de l'IUT de Blagnac souhaite disposer d'un outil lui permettant de gérer ses vacataires, les cours sur lesquels ils interviennent, mais aussi les profils de vacataires recherchés. La solution technique développée (GVIUTB) permet à des responsables de vacataires d'ajouter/modifier, visualiser, et supprimer (archiver) des vacataires, des cours, des professeurs référents et des profils de vacataires recherchés, tout en assurant la sécurité des données manipulées.
+
+Ce document détaille la structure et l'ensemble des fonctionnalités techniques de l'application, l'API REST et la base de données.
+
+{empty} +
+
+== II. Structure de la Base de données
+=== 1. Principe
+La base de données (MariaDB) permet de stocker de manière sécurisée les données manipulées par l'application. Les manipulations sur la base de données peuvent être effectuées avec l'interface web https://www.phpmyadmin.net/[PhpMyAdmin].
+
+Les données sont stockées dans des tables qui implémentent directement les principaux acteurs de l'application (vacataires, responsables, cours, etc), mais aussi leurs associations (association entre les vacataires et les cours, entre les vacataires et les compétences, etc). Les mots de passe des vacataires et des responsables des vacataires sont hachés afin que même les modérateurs de la base de données ne puissent pas les voir.
+
+=== 2. Tables de données
+La liste des tables de données et de leurs attributs peut être consultée au format SQL via leur link:../database/creation_tables.sql[script de création].
+
+=== 3. Ajout de données
+Certaines données ne peuvent être ajoutées ou modifiées qu'avec l'interface PHPMyAdmin, directement dans la base de données. Ces données concernent les départements et les responsables de vacataires.
+
+À noter que lors de l'ajout ou modification d'un responsable, le mot de passe donné doit être haché avec la fonction PHP `password_hash` (PASSWORD_DEFAULT). Cela peut se faire à l'aide de sites en ligne comme https://phppasswordhash.com/[phppasswordhash.com]. Il est également possible d'utiliser le <<script_python, script Python fourni>> pour simplifier la tâche.
+
+{empty} +
+
+== III. Structure de l'API REST
+=== 1. Principe
+L'API REST est codée en PHP et permet d'établir une liaison sécurisée entre la base de données et l'application. Cette dernière peut donc échanger des requêtes qui seront traitées afin d'obtenir (GET), ajouter (POST), modifier (PUT) ou supprimer (DELETE) des données de la base de données.
+
+Les requêtes sont effectuées sur des routes permettant de dissocier les données à traiter. Dans le répertoire link:../api[`/api`], c'est le fichier link:../api/config.php[`config.php`] qui configure la connexion avec la base de données, et le fichier link:../api/index.php[`index.php`] qui configure les échanges de données avec les routes de l'API.
+
+=== 2. Configuration des routes de données
+==== 2.1. Sécurisation des routes
+Afin de garantir la sécurité des données, envoyer des requêtes sur les routes de l'API nécessite d'effectuer une connexion, et le nombre de données traitables est limité en fonction du type d'utilisateur connecté (vacataire ou responsable de vacataires).
+
+Pour cela, l'utilisateur doit envoyer un email et un mot de passe dans une requête POST sur la route link:../api/routes/auth.php[`/auth`]. Si la connexion échoue, des messages d'erreurs seront renvoyés, sinon une session sera créée sur le serveur avec l'ID et le type de l'utilisateur et un cookie session sera donné au navigateur de l'utilisateur. Cela permet à l'API de se "rappeler" que l'utilisateur est connecté, et d'ainsi lui permettre de manipuler les données accessibles en fonction de son type de profil.
+
+Les vacataires peuvent effectuer des requêtes GET et PUT sur la route `/vacataires` et des requêtes POST et DELETE sur les routes `/posseder` et `/intervenir`. Les responsables de vacataires peuvent en plus, quant à eux, effectuer des requêtes GET POST et PUT sur la majorité des autres routes.
+
+==== 2.2. Description des principales routes
+Liste des routes accessibles :
+
+* `/auth` : connexion et déconnexion pour les utilisateurs
+* `/responsables-vacataires` : données des responsables de vacataires
+* `/vacataires` : données des vacataires
+* `/cours` : données des cours
+* `/profils-recherches` : données des profils recherchés
+* `/professeurs-referents` : données des professeurs référents
+* `/departements` : données des départements
+* `/competences` : données des compétences
+* `/intervenir` : associations entre les vacataires et les cours
+* `/posseder` : associations entre les vacataires/profils recherchés et les compétences
+
+{empty} +
+
+== IV. Structure de l'application Angular
+=== 1. Principe
+L'application a été réalisée avec le framework web https://angular.io/[Angular] et les frameworks CSS https://getbootstrap.com/[Boostrap] et https://bootswatch.com/[Bootswatch]. Angular permet de créer des applications web dynamiques et optimisées sur une seule page en se basant sur un principe de composants et de routes.
+
+Les composants Angular sont principalement constitués de trois fichiers : un template HTML (partie visuelle), une feuille de style CSS et un backend en TypeScript pour gérer les données et les affichages dynamiques. Ils peuvent être "imbriqués" les uns dans les autres ce qui permet de faire des affichages dynamiques très facilement (listage de données, fenêtres, formulaires, etc).
+
+Pour naviguer à travers les différents composants d'une application "one-page", Angular propose un système de route basée sur l'URL. Il est ainsi possible de naviguer d'une page de listage à la page de consultation d'un profil utilisateur en un clique. Il est également possible de sécuriser les routes afin de les rendre accessibles uniquement sous certaines conditions.
+
+Angular propose également des services permettant de réaliser des tâches pour les composants en annexe de ces derniers. Notre application utilise des services afin d'envoyer des requêtes GET, POST, PUT et DELETE à l'API REST pour rendre les données de la base de données accessibles et manipulables sur l'interface.
+
+{empty} +
+
+=== 2. Fonctionnalités techniques
+==== 2.1. Connexion et sécurité
+===== 2.1.1. Formulaire de connexion
+Afin de sécuriser l'accès aux données, un formulaire de connexion permet de récupérer et d'envoyer les données de connexion d'un utilisateur à la route `/auth` de l'API. Si la connexion réussie, l'API retourne, l'ID, le prénom, le nom et le type de profil de l'utilisateur. Ce dernier sera utilisé pour définir les routes de l'application qui lui sont accessibles.
+
+====== Composantes concernées
+Route : `/connexion`
+
+* Composant `connexion` :
+** `onSubmit`
+* Service `LoginService` :
+** `login`
+** `setUser`
+
+===== 2.1.2. Sécurisation des routes
+Un link:../src/app/auth.guard.ts["guard"] a été utilisé pour déterminer les routes accessibles parmi celles définies dans le fichier link:../src/app/app-routing.module.ts[app-routing.module.ts]. Pour chaque route visitée, le guard tente d'établir une connexion avec l'API à partir des données de l'utilisateur enregistrées. En fonction de la réponse du serveur, le guard détermine quelles routes l'utilisateur peut consulter ou non.
+
+====== Composantes concernées
+Route : toutes
+
+* Guard `AuthGuard` :
+** `AuthGuard`
+** `AuthType`
+* Service `LoginService` :
+** `isAuthenticated`
+** `getUserType`
+** `setUser`
+
+{empty} +
+
+==== 2.2. Gestion des vacataires
+===== 2.2.1. Listage et filtrage des vacataires
+Il est possible de lister les vacataires et de les filtrer en fonction de leur statut (intervenant/postulant) et de leurs compétences. Seuls les vacataires non-archivés seront listés.
+
+====== Composantes concernées
+Route : `/vacataires`
+
+* Composant `listage-vacataire` :
+** `ngOnInit`
+** `filtrerVacataires`
+* Composant `composant-vacataire` :
+** `ngOnInit`
+* Service `VacataireService` :
+** `getVacataires`
+
+===== 2.2.2. Ajout et modification d'un vacataire
+Il est possible d'ajouter et de modifier les données d'un vacataire avec un seul et même formulaire s'adaptant en fonction du mode (ajout/modification). Le prénom, le nom, l'adresse email et le mot de passe sont obligatoires lors de la saisie des données. Une image et un CV peuvent aussi être ajoutés au vacataire.
+
+En mode 'modification', le mot de passe, l'image et le CV ne seront mis à jour que lorsque des données sont entrées dans les champs correspondants. Les données de l'image et du CV peuvent être supprimées à tout moment. Si l'ID saisi dans l'URL ne correspond à aucun vacataire, l'utilisateur sera redirigé vers la page de listage des vacataires.
+
+====== Composantes concernées
+Routes : `/vacataires/ajouter` et `/vacataires/modifier/:id`
+
+* Composant `ajout-modifier-vacataire` :
+** `ngOnInit`
+** `onSubmit`
+** `onImgFileChange`
+** `onCVFileChange`
+** `removeImage`
+** `removeCV`
+** `isImageTypeValid`
+** `isFileSizeValid`
+* Service `VacataireService` :
+** `addVacataire`
+** `setVacataire`
+** `addAssociationCours`
+** `removeAssociationCours`
+
+===== 2.2.3. Consultation du profil d'un vacataire
+Il est possible de consulter toutes les données d'un vacataire, dont celles des compétences et des cours qui lui sont associés. Si l'ID saisi dans l'URL ne correspond à aucun vacataire, l'utilisateur sera redirigé vers la page de listage des vacataires.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `ngOnInit`
+** `consulterProfilVacataire`
+* Service `VacataireService` :
+** `getVacataire`
+
+Cette page permet d'accéder aux fonctionnalités vacataire décrites par la suite.
+
+===== 2.2.4. Ajout/suppression de formations
+Il est possible d'ajouter ou de supprimer des formations à un vacataire via le champ "Nouvelle formation" ou en survolant une formation existante.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `ajouterFormation`
+** `supprimerFormation`
+* Service `VacataireService` :
+** `getVacataire`
+** `setVacataire`
+
+===== 2.2.5. Association avec des compétences
+Il est possible d'associer ou de dés-associer des compétences à un vacataire via le champ "Nouvelle compétence" ou en survolant une compétence existante.
+
+Lors de la saisie, la compétence sera ajoutée dans la base de données en plus de son association avec le vacataire si elle n'y existe pas déjà. Lors de la suppression, la compétence sera supprimée de la base de données si elle n'est associé à aucun vacataire/profil recherché.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `ajouterCompetence`
+** `supprimerCompetence`
+** `updateCompetences`
+* Service `VacataireService` :
+** `getVacataire`
+** `setVacataire`
+
+===== 2.5.6. Recruter un vacataire postulant
+Il est possible de faire passer un vacataire du statut de postulant à intervenant. Sa date de recrutement sera mise à jour et il sera possible de l'associer à des cours.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `rectuter`
+* Service `VacataireService` :
+** `setVacataire`
+
+===== 2.2.7. Association avec des cours
+Il est possible d'associer ou de dés-associer des cours à un vacataire en sélectionnant un département puis un cours dans la section "Faire intervenir sur un nouveau cours", ou en cliquant sur l'icône poubelle en survolant un cours existant.
+
+Seuls les cours non-archivés et avec un nombre suffisant de postes peuvent être associés aux vacataires.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `trierCoursParDept`
+** `ajouterAssociationCours`
+** `supprimerAssociationCours`
+* Service `VacataireService` :
+** `getVacataire`
+** `addAssociationCours`
+** `removeAssociationCours`
+
+===== 2.2.8. Archivage d'un vacataire
+Il est possible d'archiver un vacataire en cliquant sur le bouton "Archiver". Ce dernier existera toujours dans la base de données, mais il n'apparaitra plus dans l'interface de l'application et toutes ses associations avec les cours et les compétences seront supprimées.
+
+====== Composantes concernées
+Route : `/vacataires/profil/:id`
+
+* Composant `profil-vacataire` :
+** `archiver`
+* Service `VacataireService` :
+** `getVacataire`
+** `setVacataire`
+
+{empty} +
+
+==== 2.3. Gestion des cours
+===== 2.3.1. Listage et filtrage des cours
+Il est possible de lister les cours et de les filtrer en fonction de leur département et des professeurs référents. Seuls les cours non-archivés seront listés.
+
+====== Composantes concernées
+Route : `/cours`
+
+* Composant `listage-cours` :
+** `ngOnInit`
+** `filtrerCours`
+* Composant `composant-cours` :
+** `ngOnInit`
+* Service `CoursService` :
+** `getCoursCards`
+
+===== 2.3.2. Ajout et modification d'un cours
+Il est possible d'ajouter et de modifier les données d'un cours avec un seul et même formulaire s'adaptant en fonction du mode (ajout/modification). Le libelle, le nombre des vacataires nécessaires, le département et le professeur référent sont obligatoires lors de la saisie des données.
+
+En mode 'modification' si l'ID saisi dans l'URL ne correspond à aucun cours, l'utilisateur sera redirigé vers la page de listage des cours.
+
+====== Composantes concernées
+Routes : `/cours/ajouter` et `/cours/modifier/:id`
+
+* Composant `ajout-modifier-cours` :
+** `ngOnInit`
+** `onSubmit`
+* Service `CoursService` :
+** `getCourCards`
+** `getCour`
+** `addCours`
+** `setCours`
+
+===== 2.3.3. Consultation d'un cours
+Il est possible de consulter toutes les données d'un cours, dont celles des vacataires qui lui sont associés. Si l'ID saisi dans l'URL ne correspond à aucun cours, l'utilisateur sera redirigé vers la page de listage des cours.
+
+====== Composantes concernées
+Route : `/cours/consultation/:id`
+
+* Composant `consultation-cours` :
+** `ngOnInit`
+* Service `CoursService` :
+** `getCourCards`
+
+===== 2.3.4. Archivage d'un cours
+Il est possible d'archiver un cours en cliquant sur le bouton "Archiver". Ce dernier existera toujours dans la base de données, mais il n'apparaitra plus dans l'interface de l'application et toutes ses associations avec les vacataires seront supprimées.
+
+====== Composantes concernées
+Route : `/cours/consultation/:id`
+
+* Composant `consultation-cours` :
+** `archiver`
+* Service `CoursService` :
+** `setCours`
+
+{empty} +
+
+==== 2.4. Gestion des profils recherchés
+===== 2.4.1. Listage et filtrage des profils recherchés
+Il est possible de lister les profils recherchés et de les filtrer en fonction de leurs compétences. Seuls les profils recherchés non-archivés seront listés.
+
+====== Composantes concernées
+Route : `/profils-recherches`
+
+* Composant `listage-profils-recherches` :
+** `ngOnInit`
+** `filtrerProfilsRecherches`
+* Composant `composant-profils-recherches` :
+** `ngOnInit`
+* Service `ProfilsRecherchesService` :
+** `getProfilsRecherches`
+
+===== 2.4.2. Ajout et modification d'un profil recherché
+Il est possible d'ajouter et de modifier les données d'un profil recherché avec un seul et même formulaire s'adaptant en fonction du mode (ajout/modification). Le libellé est obligatoire lors de la saisie des données.
+
+En mode 'modification', si l'ID saisi dans l'URL ne correspond à aucun profil recherché, l'utilisateur sera redirigé vers la page de listage des profils recherchés.
+
+====== Composantes concernées
+Routes : `/profils-recherches/ajouter` et `/profils-recherches/modifier/:id`
+
+* Composant `ajout-modifier-cours` :
+** `ngOnInit`
+** `onSubmit`
+* Service `ProfilsRecherchesService` :
+** `getProfilRecherche`
+** `addProfilRecherche`
+** `setProfilRecherche`
+
+===== 2.4.3. Consultation d'un profil recherché
+Il est possible de consulter toutes les données d'un profil recherché, dont celles des vacataires postulants et des compétences qui lui sont associés. Si l'ID saisi dans l'URL ne correspond à aucun profil, l'utilisateur sera redirigé vers la page de listage des profils recherchés.
+
+====== Composantes concernées
+Route : `/profils-recherches/consultation/:id`
+
+* Composant `consultation-profils-recherches` :
+** `ngOnInit`
+* Service `ProfilsRecherchesService` :
+** `getProfilRecherche`
+
+Cette page permet d'accéder aux fonctionnalités des profils recherches décrites par la suite.
+
+===== 2.4.4. Association avec des compétences
+Il est possible d'associer ou de dés-associer des compétences à un profil recherche via le champ "Nouvelle compétence" ou en survolant une compétence existante.
+
+Lors de la saisie, la compétence sera ajoutée dans la base de données en plus de son association avec le profil recherche si elle n'y existe pas déjà. Lors de la suppression, la compétence sera supprimée de la base de données si elle n'est associé à aucun profil recherché.
+
+====== Composantes concernées
+Route : `/profils-recherches/consultation/:id`
+
+* Composant `consultation-profils-recherches` :
+** `ajouterCompetence`
+** `supprimerCompetence`
+** `updateCompetences`
+* Service `ProfilsRecherchesService` :
+** `setProfilRecherche`
+
+===== 2.4.5. Archivage d'un profil recherché
+Il est possible d'archiver un profil recherché en cliquant sur le bouton "Archiver". Ce dernier existera toujours dans la base de données, mais il n'apparaitra plus dans l'interface de l'application et toutes ses associations avec les compétences seront supprimées.
+
+====== Composantes concernées
+Route : `/profils-recherches/consultation/:id`
+
+* Composant `consultation-profils-recherches` :
+** `archiver`
+* Service `ProfilsRecherchesService` :
+** `setProfilRecherche`
+
+{empty} +
+
+==== 2.5. Gestion des professeurs référents
+===== 2.5.1. Listage des professeurs référents
+Il est possible de lister les professeurs référents. Seuls les professeurs référents non-archivés seront listés.
+
+====== Composantes concernées
+Route : `/professeurs-referents`
+
+* Composant `listage-professeurs-referents` :
+** `ngOnInit`
+* Composant `composant-professeurs-referents` :
+** `ngOnInit`
+* Service `ProfesseursReferentsService` :
+** `getProfesseursReferents`
+
+===== 2.5.2. Ajout et modification d'un professeur référent
+Il est possible d'ajouter et de modifier les données d'un professeur référent avec un seul et même formulaire s'adaptant en fonction du mode (ajout/modification). Le prénom, le nom et l'adresse email sont obligatoires lors de la saisie des données. Une image peut aussi être ajoutée au professeur référent.
+
+En mode 'modification', l'image sera mise à jour que lorsque des données sont entrées dans les champs correspondants. Les données de l'image peuvent être supprimées à tout moment. Si l'ID saisi dans l'URL ne correspond à aucun vacataire, l'utilisateur sera redirigé vers la page de listage des professeurs référents.
+
+====== Composantes concernées
+Routes : `/professeurs-referents/ajouter` et `/professeurs-referents/modifier/:id`
+
+* Composant `ajout-modifier-professeurs-referents` :
+** `ngOnInit`
+** `onSubmit`
+* Service `ProfesseursReferentsService` :
+** `getProfesseurReferent`
+** `addProfesseurReferent`
+** `setProfesseurReferent`
+
+===== 2.5.3. Consultation du profil d'un professeur référent
+Il est possible de consulter toutes les données d'un professeur référent, dont celles des cours sur lequel il est référent. Si l'ID saisi dans l'URL ne correspond à aucun profil, l'utilisateur sera redirigé vers la page de listage des professeurs référents.
+
+====== Composantes concernées
+Route : `/professeurs-referents/profil/:id`
+
+* Composant `profil-professeurs-referents` :
+** `ngOnInit`
+* Service `ProfesseursReferentsService` :
+** `getProfesseurReferent`
+
+===== 2.5.4. Archivage d'un professeur référent
+Il est possible d'archiver un professeur référent en cliquant sur le bouton "Archiver". Ce dernier existera toujours dans la base de données, mais il n'apparaitra plus dans l'interface de l'application et il n'apparaitra plus dans aucun cours.
+
+====== Composantes concernées
+Route : `/professeurs-referents/profil/:id`
+
+* Composant `profil-professeurs-referents` :
+** `archiver`
+* Service `ProfesseursReferentsService` :
+** `setProfesseurReferent`
+
+{empty} +
+
+==== 2.6. Gestion des responsables de vacataires
+===== 2.6.1. Ajout d'un responsable de vacataires [[script_python]]
+L'ajout d'un responsable de vacataire ne peut pas se faire via l'interface. Pour ce faire, un script Python a été fourni séparément.
+
+Installer d'abord les dépendances nécessaires avec la commande suivante :
+
+[source, bash]
+----
+pip install mysql-connector-python bcrypt getpass
+----
+
+Lancer ensuite le script link:../scripts/insert_responsable.py[`insert_responsable.py`] avec la commande suivante :
+
+[source, bash]
+----
+python insert_responsable.py
+----
+
+Suivre ainsi les indications en complétant les champs nécessaires. Ce script ne doit être accessible que par les utilisateurs administrateurs ayant un accès direct aux serveurs et à la base de données.
+
+===== 2.6.2. Consultation et modification du profil d'un responsable de vacataires
+Il est possible pour un responsable de vacataires de consulter et modifier les données de son profil. Son nom, son prénom, et son adresse email sont obligatoires. Le mot de passe, ne sera mis à jour que lorsque des données sont entrées dans le champ correspondant.
+
+====== Composantes concernées
+Routes : `/responsables-vacataires/modifier/:id`
+
+* Composant `modifier-responsable-vacataires` :
+** `ngOnInit`
+** `onSubmit`
+* Service `ResponsableVacatairesService` :
+** `getResponsableVacataires`
+** `setResponsableVacataires`
+
+{empty} +
+
+==== 2.7. Autres points techniques
+===== 2.7.1. En-tête
+L'en tête de l'application permet de naviguer à travers les composants de cette dernière. Il permet aussi à l'utilisateur de savoir sur quelle page/composant il se trouve et en tant que qui il est connecté. Un bouton permet aussi la déconnexion.
+
+====== Composantes concernées
+* Composant `en-tete` :
+** `ngOnInit`
+** `logout`
+* Service `LoginService` :
+** `getUserObservable`
+** `setUser`
+
+===== 2.7.2. Énumération et modèles
+Des classes "énumération" ont été utilisée pour rendre la modification de certaines valeurs de variables plus simple. Elles se trouvent dans le répertoire link:../src/app/enum/[`/enum`] :
+
+* `mode-ajout-modif.ts` : utilisée par les composants ajoutant et modifiant des données afin de déterminer si leur formulaire doit être présenté en mode édition ou ajout.
+* `type-profil.ts` : les différents types d'utilisateur (vacataire, responsable, postulant, intervenant, etc)
+
+===== 2.7.3. Fonctions utiles
+Le fichier link:../src/app/app-utils.ts[`app-utils.ts`] contient des fonctions utiles traitant des cas généraux et pouvant être utilisées par tous les composants qui en ont besoin.

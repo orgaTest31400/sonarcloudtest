@@ -1,0 +1,84 @@
+= Analyse d'impact
+:toc:
+:toc-title: Sommaire
+
+Ce document regroupe les principales contraintes imposées par la réglementation https://www.cnil.fr/fr/rgpd-par-ou-commencer[RGPD] ainsi que les mesures prises par notre équipe en ce qui concerne le projet de gestion des vacataires de l'IUT de Blagnac.
+
+== I. Finalités des traitements de données
+* *Gestion des vacataires postulants/intervenants* : La principale finalité est de maintenir une base de données à jour sur les vacataires actuellement en service. Cela inclut leur profil, les matières qu'ils enseignent, leur disponibilité, etc.
+* *Gestion des besoins de recrutement* : Suivre les besoins en recrutement de nouveaux vacataires, que ce soit pour remplacer des enseignants existants ou pour couvrir de nouveaux cours.
+* *Suivi de l'état de recrutement* : Garder une trace de l'état d'avancement du processus de recrutement pour chaque vacataire en cours de recrutement (_dates ?_).
+* *Suivi des heures de travail* : Enregistrer le nombre d'heures travaillées par chaque vacataire dans chaque matière.
+* *Interactions avec l'API REST* : Obtenir des informations sur les vacataires, les cours, les départements, les responsables, etc via l'API REST.
+* *Authentification des utilisateurs* : Permettre aux utilisateurs de s'inscrire et de se connecter pour accéder aux fonctionnalités du système.
+
+== II. Enjeux liés à la protection des données
+* *Confidentialité des données personnelles* : Assurer que les données personnelles des vacataires, des cours, de l'IUT, etc, sont stockées en toute sécurité et ne sont accessibles qu'aux personnes autorisées.
+* *Sécurité des informations sensibles* : Protéger les informations sensibles telles que les notes de recrutement, les données de contact et les informations de connexion contre les accès non autorisés.
+* *_[À VOIR]_ Conformité aux réglementations sur la protection des données* : Respecter les lois et règlements sur la protection des données, telles que le RGPD en Europe, en garantissant le consentement approprié et la gestion des données.
+* *Sécurité de l'API REST* : Assurer que l'accès à l'API REST est sécurisé pour éviter toute violation de données
+
+== III. Mesures de sécurité mises en place
+* *_[À VOIR]_ Conformité aux réglementations* : S'assurer que toutes les pratiques de gestion des données sont conformes aux réglementations en vigueur, notamment en ce qui concerne la conservation des données et la protection de la vie privée.
+* *Authentification et autorisation* : Mettre en place un système d'authentification robuste pour les utilisateurs, avec des niveaux d'autorisation appropriés pour accéder aux différentes fonctionnalités.
+* *Chiffrement des données* : Chiffrer les données sensibles en transit et au repos pour éviter les fuites de données.
+* *Contrôles d'accès* : Mettre en place des contrôles d'accès stricts pour garantir que seules les personnes autorisées ont accès aux données.
+* *_[À VOIR]_ Sauvegarde des données* : Effectuer des sauvegardes régulières des données pour éviter la perte de données en cas d'incident.
+
+== IV. Niveaux de risques et protections
+
+|===
+|*Risque* |*Principales menaces* |*Principaux impacts* |*Mesures pour réduire ce risque* |*Niveau de gravité*
+
+|Piratage de compte utilisateur
+|Tentatives d’accès non autorisé à des comptes utilisateur·rice
+|Vol d’informations personnelles
+|Mise en place d’une politique de mot de passe fort
+|Élevé
+
+|Injection SQL
+|Injection de commandes malveillantes dans les formulaires de saisie de données
+|Fuite de données sensibles, perturbation des opérations du site, connexion à un compte utilisateur·rice / administrateur·rice
+|Utilisation de requêtes préparées pour éviter les injections SQL
+|Élevé
+
+|Attaque par déni de service
+|Envoi de requêtes massives pour surcharger le site et le rendre inaccessible
+|Interruption de service pour les utilisateurs·rices, perte de revenus, perte de données, interruption de service administratif
+|*_[À VOIR]_* Mise en place de mesures de défense contre les attaques par déni de service, limitation des requêtes par IP
+|Élevé
+
+|Phishing
+|Utilisation d’e-mails ou de sites frauduleux ressemblant à REVIVE pour voler des informations de compte utilisateur·rice
+|Vol d’informations personnelles
+|*_[À VOIR]_* Sensibilisation des utilisateurs·rices aux risques de phishing, vérification de l’identité de l’expéditeur·rice des e-mails, vérification de l’URL du site
+|Élevé
+
+|Stockage des données
+|Perte ou vol des supports de stockage des données/données
+|Fuite de données sensibles, perturbation des opérations du site
+|*_[À VOIR]_* Chiffrage des données sensibles, mise en place de procédures de récupération de données en cas de fuite
+|Élevée
+|===
+
+|===
+|*Mesure* |*Modalités de mise en œuvre* |*Priorité*
+
+|Chiffrage des données sensibles
+|*_[À VOIR]_* Utilisation d’algorithmes de chiffrage pour chiffrer les données, stockage des clés de chiffrage dans un lieu sécurisé, vérification de la validité des certificats de sécurité lors de la transmission des données chiffrées. / Chiffrage pour les données ayant besoin d’être récupérées / Chiffrage pour les mots de passe
+|Élevée
+
+|Authentification forte
+|Mise en place d’une politique de mot de passe fort (longueur minimale, caractères spéciaux, etc.).
+|Élevée
+
+|Contrôle d’accès
+|Mise en place de rôles et de droits d’accès pour les utilisateurs·rices et les administrateurs·rices, utilisation de mécanismes d’authentification pour vérifier l’identité des utilisateurs·rices/administrateurs·rices.
+|Élevée
+
+|Règlement général sur la protection des données (RGPD)
+|*_[À VOIR]_* Mise en place d’un registre des activités de traitement, mise en place de procédures de notification des fuites de données, mise en place de procédures de gestion des demandes d’accès (dans le cadre des utilisateurs·rices administrateurs·rices) et de rectification.
+|Un peu moins élevée
+|===
+
+

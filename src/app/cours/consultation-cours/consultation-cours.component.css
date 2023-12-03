@@ -1,0 +1,17 @@
+.card-vacataire:hover {
+  background-color: rgb(245, 245, 245);
+  cursor: pointer;
+}
+
+.card-vacataire .profil-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.description-carte {
+  white-space: pre;
+  text-wrap: balance;
+}

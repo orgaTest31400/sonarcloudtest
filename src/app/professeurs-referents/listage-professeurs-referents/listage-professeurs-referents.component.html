@@ -1,0 +1,19 @@
+<h1 class="mb-3">{{ professeursReferents.length }} professeur(s) référent(s)</h1>
+
+<div class="d-flex flex-row align-items-stretch gap-3 mb-4">
+  <button type="button" class="btn btn-success" [routerLink]="['/professeurs-referents/ajouter']" routerLinkActive="router-link-active" >Ajouter un professeur référent</button>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4">
+  <div *ngFor="let professeurReferent of professeursReferents" class="col mb-3 ps-2 pe-2">
+    <app-composant-professeur-referent [professeurReferent]="professeurReferent"></app-composant-professeur-referent>
+  </div>
+  <p *ngIf="professeursReferents.length === 0" class="alert alert-warning">Aucun professeur référent à afficher</p>
+</div>
+
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

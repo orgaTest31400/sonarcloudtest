@@ -1,0 +1,4 @@
+.select-classes:focus {
+    border-color: var(--bs-border-color)!important;
+    box-shadow: none!important;
+}

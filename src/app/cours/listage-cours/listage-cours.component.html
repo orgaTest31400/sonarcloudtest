@@ -1,0 +1,35 @@
+<h1 class="mb-3">{{ cours.length }} cours</h1>
+
+<!-- Filtres -->
+<div class="d-flex flex-wrap align-items-stretch gap-3 text-nowrap mb-4">
+  <div class="d-flex align-items-center gap-2">
+    <label for="departement">Département</label>
+    <select class="select-classes form-select-lg form-select" name="departement" id="departement" [(ngModel)]="selectedDptID" (change)="filtrerCours()">
+      <option *ngFor="let dept of departementsWithLibelles" [value]="dept.ID">{{ dept.libelle }}</option>
+    </select>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <label for="prof-ref">Professeur référent</label>
+    <select class="select-classes form-select-lg form-select" name="prof-ref" id="prof-ref" [(ngModel)]="selectedProfRefId" (change)="filtrerCours()">
+      <option value="NaN" selected>Tous les prof. référents</option>
+      <option [value]="profRef.ID" *ngFor="let profRef of professeursReferents">{{profRef.prenom}} {{profRef.nom}}</option>
+    </select>
+  </div>
+  <button type="button" class="btn btn-success" [routerLink]="['/cours/ajouter']" routerLinkActive="router-link-active" >Ajouter un cours</button>
+</div>
+
+<!-- Affichage des cours filtrés -->
+<div class="row row-cols-1 row-cols-md-3">
+  <div *ngFor="let coursItem of coursFiltres" class="col mb-3 ps-2 pe-2">
+    <!-- Composant pour afficher un cours -->
+    <app-composant-cours [coursItem]="coursItem"></app-composant-cours>
+  </div>
+  <p *ngIf="coursFiltres.length === 0" class="alert alert-warning">Aucun cours à afficher</p>
+</div>
+
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

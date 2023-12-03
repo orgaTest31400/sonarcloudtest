@@ -1,0 +1,42 @@
+<nav class="navbar navbar-expand-lg bg-light border-start-0 border-end-0 position-fixed top-0 left-0 w-100" data-bs-theme="light" style="z-index:99; box-shadow:0 1px 5px rgba(0, 0, 0, 0.5)">
+  <div class="container-fluid">
+    <b class="navbar-brand" href="#">GVIUTB</b>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse gap-5" [ngClass]="{'justify-content-end': user.typeProfil == TypeProfil.VACATAIRE}" id="navbarColor03">
+      <ul *ngIf="user.typeProfil == TypeProfil.RESPONSABLE_VACATAIRES" class="navbar-nav me-auto">
+
+        <!-- Listage des cours -->
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" routerLink="/cours" [ngClass]="{'fw-bold': routeActuelle.includes('/cours')}">Cours</a>
+        </li>
+
+        <!-- Listage des vacataires (postulants et intervenants) -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/vacataires" [ngClass]="{'fw-bold': routeActuelle.includes('/vacataires')}">Vacataires</a>
+        </li>
+
+        <!--  Listage des profils recherchés -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profils-recherches" [ngClass]="{'fw-bold': routeActuelle.includes('/profils-recherches')}">Profils recherchés</a>
+        </li>
+
+        <!-- Listage des professeurs référents -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/professeurs-referents" [ngClass]="{'fw-bold': routeActuelle.includes('/professeurs-referents')}">Professeurs référents</a>
+        </li>
+      </ul>
+
+      <!-- Données de connexion utilisateur et liens profil et déconnexion -->
+      <div *ngIf="!isNaN(user.id)" class="d-flex connexion-data flex-column align-items-end">
+        <span>Connecté en tant que <strong>{{ user.prenom + ' ' + user.nom }}</strong></span>
+        <div class="d-flex gap-3">
+          <a routerLink="{{ user.typeProfil == TypeProfil.VACATAIRE ? '/vacataires/profil/'+user.id : '/responsables-vacataires/modifier/'+user.id }}" class="link-info small">Voir le profil</a>
+          <a class="small" (click)="logout()" style="cursor: pointer">Se déconnecter</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>

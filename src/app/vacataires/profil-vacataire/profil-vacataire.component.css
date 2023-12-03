@@ -1,0 +1,52 @@
+@media (width < 1000px) {
+  .profil-vacataire {
+    flex-direction: column;
+  }
+  .partie-droite {
+    border-left: none !important;
+  }
+}
+
+@media (width >= 1000px) {
+  .partie-droite {
+    border-top: none !important;
+  }
+}
+
+.profil-vacataire .profil-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-cours:hover>.remove-cours {
+  opacity: 1 !important;
+}
+
+.competence:hover>span {
+  opacity: 1 !important;
+  cursor: pointer;
+}
+
+.formation:hover svg {
+  opacity: 1 !important;
+  cursor: pointer;
+}
+
+.card-cours>.card-body:hover {
+  background-color: rgb(245, 245, 245);
+}
+
+.discord-clipboard {
+  font-family: consolas;
+  border: 1px var(--bs-success-text-emphasis) solid;
+  margin-left: .5em;
+  padding: .1em;
+}
+
+.description-carte {
+  white-space: pre;
+  text-wrap: balance;
+}

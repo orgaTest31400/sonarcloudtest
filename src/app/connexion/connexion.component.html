@@ -1,0 +1,38 @@
+<div class="d-flex flex-column align-items-center w-100 h-100">
+  <h1 class="">Connexion</h1>
+  <form #connexionForm="ngForm" (ngSubmit)="onSubmit()" class="d-flex flex-column gap-3 w-100" style="max-width: 650px">
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          aria-describedby="emailHelp"
+          placeholder="exemple@mail.com"
+          [(ngModel)]="email"
+          name="email"
+          pattern="^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="password" class="form-label">Mot de passe</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          placeholder="Mot de passe"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="connexionForm.invalid">Se connecter</button>
+  </form>
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

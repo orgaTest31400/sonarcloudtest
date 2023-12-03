@@ -1,0 +1,25 @@
+<div routerLink="{{ '/profils-recherches/consultation/' + profilRecherche.ID }}" class="card h-100 card-profilRecherche" style="cursor: pointer">
+  <div class="card-header text-center">
+    <h3 class="m-0 text-primary">Profil recherché</h3>
+  </div>
+  <div class="card-body d-flex flex-column align-items-center gap-3 ps-5 pe-5">
+    <div class="d-flex flex-column align-items-center text-center gap-1">
+      <h4 class="m-0">{{ profilRecherche.libelle }}</h4>
+      <h6 class="m-0 text-muted" style="display:-webkit-box; -webkit-box-orient:vertical; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:2;">{{ profilRecherche.description }}</h6>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <small *ngIf="!profilRecherche.competences.length" class="text-muted text-center">Aucune compétence</small>
+      <div *ngFor="let competence of profilRecherche.competences.slice(0, 4)" class="badge rounded-pill bg-primary">{{ competence.libelle }}</div>
+      <small class="text-muted" *ngIf="profilRecherche.competences.length > 4">et {{ profilRecherche.competences.length - 4 }} autres</small>
+    </div>
+  </div>
+  <div class="card-footer d-flex justify-content-center text-center">
+    <p class="m-0">{{ nbPostulant }} postulant(s) correspondant</p>
+  </div>
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="alertText" class="alert alert-dismissible alert-primary position-fixed start-0 bottom-0 mb-3 ms-3">
+  <button (click)="alertText = ''" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <span [innerHTML]="alertText"></span>
+</div>

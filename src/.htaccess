@@ -1,0 +1,19 @@
+#AuthType Basic
+#AuthName "Password Protected Area"
+#AuthUserFile /var/www/html/sae5.yvelin.net/.htpasswd
+#Require valid-user
+#DocumentRoot /var/www/html/sae5.yvelin.net/GestionDesVacatairesGroupe2/dist/gviutb/
+
+RewriteEngine On
+
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# If an existing asset or directory is requested go to it as it is
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+RewriteRule ^ - [L]
+
+# If the requested resource doesn't exist, use index.html
+RewriteRule ^ index.html
